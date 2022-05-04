@@ -109,3 +109,6 @@ makejob
 
 # tags
 tags
+
+#notebooks
+*.ipynb
