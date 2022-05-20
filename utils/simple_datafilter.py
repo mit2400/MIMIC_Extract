@@ -21,3 +21,16 @@ def concat_h5(file1,file2,keys,max_hours,target):
         else:
             df1.append(df2).to_hdf(target,key)
 
+def extract_first_mv_idx(Y):
+    first_mv_idx = (Y['vent']==1).groupby('subject_id').idxmax()
+    return first_mv_idx
+
+
+def filter_after_MV(X,first_mv_idx):
+    X_filter=X.copy()
+    for subject_id in (first_mv_idx.index):
+        print(X_filter.shape)
+        vent_time = first_mv_idx[subject_id][3]
+        print(subject_id, vent_time)
+        X_filter = X_filter.drop(X[(X['subject_id']==subject_id) & (X['hours_in'] >= vent_time)].index)
+    return X_filter
