@@ -23,17 +23,14 @@ def concat_h5(file1,file2,keys,max_hours,target):
 
 def extract_first_mv_idx(Y):
     Y = Y[['vent']]
-    first_mv_idx = (Y['vent']==1).groupby('subject_id').idxmax()
-    return first_mv_idx
-
-
-def filter_after_MV(X,Y):
-    Y = Y[['vent']]
     #extract hour per subject that first MV start
     first_mv_idx = (Y['vent']==1).groupby('subject_id').idxmax()
     #g[g['vent']==0].index ==> patients who do not get MV treatment
     g = Y.groupby('subject_id').sum()
     first_mv_idx = first_mv_idx.drop((g[g['vent']==0].index))
+    return first_mv_idx
+
+def filter_after_MV(X,first_mv_idx):
     X_filter=X.copy()
     for subject_id in (first_mv_idx.index):
         print(X_filter.shape)
