@@ -27,3 +27,12 @@ def simple_imputer(df,train_subj):
     
     df_out.sort_index(axis=1, inplace=True)
     return df_out
+
+def simple_imputer_mean(df,train_subj):
+    idx = pd.IndexSlice
+    df_out = df.copy()
+    df_out = df_out.set_index(ID_COLS).copy()
+    icustay_means = df_out.groupby(ID_COLS).mean()
+    global_means = df_out.loc[idx[train_subj['subject_id'],:]].mean(axis=0)
+    df_out = df_out.groupby(ID_COLS).fillna(method='ffill').groupby(ID_COLS).fillna(icustay_means).fillna(global_means)
+    return df_out
