@@ -33,8 +33,20 @@ def extract_first_mv_idx(Y):
 def filter_after_MV(X,first_mv_idx):
     X_filter=X.copy()
     for subject_id in (first_mv_idx.index):
-        print(X_filter.shape)
         vent_time = first_mv_idx[subject_id][3]
-        print(subject_id, vent_time)
         X_filter = X_filter.drop(X[(X['subject_id']==subject_id) & (X['hours_in'] >= vent_time)].index)
     return X_filter
+
+def filter_earlyexit(X,Y,static,N):
+    X_N = X.reset_index(drop=True).groupby('subject_id').filter(lambda x: (x.hours_in > N).any() )
+    SID_list = X_N['subject_id'].reset_index(drop=True).unique()
+    Y_N=Y.reset_index()
+    Y_N=Y_N[Y_N['subject_id'].isin(SID_list)]
+    static_N=static.reset_index()
+    static_N=static_N[static_N['subject_id'].isin(SID_list)]
+    return X_N, Y_N, static_N
+
+
+
+
+
